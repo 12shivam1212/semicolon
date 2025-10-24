@@ -3,19 +3,23 @@ import { Label } from '../../../../components/ui/label';
 import { Checkbox } from '../../../../components/ui/checkbox';
 import { Button } from '../../../../components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../../../../components/ui/avatar';
-import { Upload, RefreshCw } from 'lucide-react';
+import { Upload, RefreshCw, Loader2 } from 'lucide-react';
 import { OnboardingData } from '../OnboardingStorage';
 
 interface Step4Props {
     data: OnboardingData;
     onDataChange: (data: Partial<OnboardingData>) => void;
     onValidationChange: (isValid: boolean) => void;
+    onSkip?: () => void;
+    isSkipLoading?: boolean;
 }
 
 export const Step4Interests: React.FC<Step4Props> = ({
     data,
     onDataChange,
     onValidationChange,
+    onSkip,
+    isSkipLoading = false,
 }) => {
     const [selectedInterests, setSelectedInterests] = useState<string[]>(data.interests || []);
     const [avatarUrl, setAvatarUrl] = useState<string>(data.avatar || '');
@@ -95,6 +99,9 @@ export const Step4Interests: React.FC<Step4Props> = ({
     // Handle skip
     const handleSkip = () => {
         onDataChange({ interests: [], avatar: '' });
+        if (onSkip) {
+            onSkip();
+        }
     };
 
     // This step is always valid (optional fields)
@@ -187,9 +194,17 @@ export const Step4Interests: React.FC<Step4Props> = ({
                 <Button
                     variant="ghost"
                     onClick={handleSkip}
+                    disabled={isSkipLoading}
                     className="text-gray-500 hover:text-gray-700"
                 >
-                    Skip - I'll personalize later
+                    {isSkipLoading ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Completing...
+                        </>
+                    ) : (
+                        "Skip - I'll personalize later"
+                    )}
                 </Button>
             </div>
 

@@ -8,12 +8,14 @@ interface Step3Props {
     data: OnboardingData;
     onDataChange: (data: Partial<OnboardingData>) => void;
     onValidationChange: (isValid: boolean) => void;
+    onSkip?: () => void;
 }
 
 export const Step3ProfileInfo: React.FC<Step3Props> = ({
     data,
     onDataChange,
     onValidationChange,
+    onSkip,
 }) => {
     // Predefined options
     const specializations = [
@@ -59,6 +61,9 @@ export const Step3ProfileInfo: React.FC<Step3Props> = ({
 
     const handleSkip = () => {
         onDataChange({ specialization: '', year: '' });
+        if (onSkip) {
+            onSkip();
+        }
     };
 
     // This step is always valid (optional fields)
