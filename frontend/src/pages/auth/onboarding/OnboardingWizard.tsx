@@ -65,6 +65,30 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
         }
     };
 
+    const handleSkip = () => {
+        // If we're on the last step, complete the onboarding
+        if (currentStep === totalSteps) {
+            handleComplete();
+        } else {
+            // Skip the current step and proceed to next
+            nextStep();
+        }
+    };
+
+    const handleLastStepSkip = async () => {
+        // For the last step, skip acts like complete
+        setIsLoading(true);
+        try {
+            // Clear storage on successful completion
+            onboardingStorage.clearStorage();
+            onComplete(formData);
+        } catch (error) {
+            console.error('Onboarding completion failed:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleComplete = async () => {
         if (!canProceed()) return;
 
@@ -104,6 +128,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
                         data={formData}
                         onDataChange={updateFormData}
                         onValidationChange={(isValid) => updateStepValidation(3, isValid)}
+                        onSkip={handleSkip}
                     />
                 );
             case 4:
@@ -112,6 +137,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }
                         data={formData}
                         onDataChange={updateFormData}
                         onValidationChange={(isValid) => updateStepValidation(4, isValid)}
+                        onSkip={handleLastStepSkip}
+                        isSkipLoading={isLoading}
                     />
                 );
             default:
